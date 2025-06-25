@@ -1,0 +1,168 @@
+import os
+import csv
+import tensorflow as tf
+import numpy as np
+import cv2
+
+# Body part labels
+BODY_PARTS = {
+    0: 'Nose',
+    1: 'Left Eye',
+    2: 'Right Eye',
+    3: 'Left Ear',
+    4: 'Right Ear',
+    5: 'Left Shoulder',
+    6: 'Right Shoulder',
+    7: 'Left Elbow',
+    8: 'Right Elbow',
+    9: 'Left Wrist',
+    10: 'Right Wrist',
+    11: 'Left Hip',
+    12: 'Right Hip',
+    13: 'Left Knee',
+    14: 'Right Knee',
+    15: 'Left Ankle',
+    16: 'Right Ankle',
+}
+
+# Edges for drawing connections
+EDGES = {
+    (0, 1): 'm',
+    (0, 2): 'c',
+    (1, 3): 'm',
+    (2, 4): 'c',
+    (0, 5): 'm',
+    # ... (rest of your edges)
+    (14, 16): 'c'
+}
+
+def draw_keypoints(frame, keypoints, confidence_threshold, frame_number):
+    y, x, c = frame.shape
+    shaped = np.squeeze(np.multiply(keypoints, [y, x, 1]))
+
+    for kp_index, kp in enumerate(shaped):
+        ky, kx, kp_conf = kp
+        if kp_conf > confidence_threshold:
+            # Draw a green circle at the keypoint
+            cv2.circle(frame, (int(kx), int(ky)), 5, (0, 255, 0), -1)
+
+            # Display the keypoint and confidence along with body part information and frame number
+            body_part = BODY_PARTS.get(kp_index, 'Unknown')
+            text = f"Frame {frame_number} - {body_part}: ({int(kx)}, {int(ky)}) Confidence: {kp_conf}"
+            print(text)
+
+def draw_connections(frame, keypoints, edges, confidence_threshold):
+    y, x, c = frame.shape
+    shaped = np.squeeze(np.multiply(keypoints, [y, x, 1]))
+
+    for edge, color_str in edges.items():
+        p1, p2 = edge
+        y1, x1, c1 = shaped[p1]
+        y2, x2, c2 = shaped[p2]
+
+        if (c1 > confidence_threshold) and (c2 > confidence_threshold):
+            # Convert color string to RGB tuple
+            color = (0, 0, 0)  # Default color in case of an error
+            if color_str == 'm':
+                color = (255, 0, 255)  # Magenta
+            elif color_str == 'c':
+                color = (0, 255, 255)  # Cyan
+            elif color_str == 'y':
+                color = (255, 255, 0)  # Yellow
+
+            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
+
+# Load the TensorFlow Lite interpreter
+interpreter = tf.lite.Interpreter(model_path='3.tflite')
+interpreter.allocate_tensors()
+
+# Specify the directory containing video files
+video_directory = 'infinityai_fitness_basic_legraise_v1.0/data/'
+
+# Iterate over all video files in the directory
+for video_file in os.listdir(video_directory):
+    if video_file.endswith('.mp4'):
+        video_path = os.path.join(video_directory, video_file)
+        video_name = os.path.splitext(os.path.basename(video_path))[0]
+
+        # Open the video file
+        cap = cv2.VideoCapture(video_path)
+
+        # Get total number of frames in the video
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        # Create a CSV file and write header inside the data directory for each video
+        csv_filename = os.path.join(video_directory, f'{video_name}.csv')
+        with open(csv_filename, mode='w', newline='') as csvfile:
+            fieldnames = ['Frame', 'Nose X', 'Nose Y', 'Left Eye X', 'Left Eye Y', 'Right Eye X', 'Right Eye Y',
+                          'Left Ear X', 'Left Ear Y', 'Right Ear X', 'Right Ear Y', 'Left Shoulder X', 'Left Shoulder Y',
+                          'Right Shoulder X', 'Right Shoulder Y', 'Left Elbow X', 'Left Elbow Y', 'Right Elbow X',
+                          'Right Elbow Y', 'Left Wrist X', 'Left Wrist Y', 'Right Wrist X', 'Right Wrist Y',
+                          'Left Hip X', 'Left Hip Y', 'Right Hip X', 'Right Hip Y', 'Left Knee X', 'Left Knee Y',
+                          'Right Knee X', 'Right Knee Y', 'Left Ankle X', 'Left Ankle Y', 'Right Ankle X',
+                          'Right Ankle Y', 'Activity']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+
+            # Add a flag to track whether the video is paused
+            paused = False
+
+            while cap.isOpened():
+                ret, frame = cap.read()
+
+                if not ret:
+                    break
+
+                current_frame = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
+
+                frames_left = total_frames - current_frame
+                fraction_text = f'{frames_left}/{total_frames}'
+
+                font = cv2.FONT_ITALIC
+                cv2.putText(frame, fraction_text, ((frame.shape[1] - len(fraction_text) * 10) // 2, 30), font, 0.5, (0, 0, 0), 2, cv2.LINE_AA)
+
+                img = frame.copy()
+                img = tf.image.resize_with_pad(np.expand_dims(img, axis=0), 192, 192)
+                input_image = tf.cast(img, dtype=tf.float32)
+
+                interpreter.set_tensor(interpreter.get_input_details()[0]['index'], np.array(input_image))
+                interpreter.invoke()
+                keypoints_with_scores = interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
+
+                # Iterate through keypoints and write to CSV
+                row_data = {
+                    'Frame': current_frame,
+                    'Activity': '6'  # Placeholder value for 'Activity'
+                }
+                for kp_index, kp in enumerate(np.squeeze(np.multiply(keypoints_with_scores, [frame.shape[0], frame.shape[1], 1]))):
+                    ky, kx, _ = kp
+                    body_part = BODY_PARTS.get(kp_index, 'Unknown')
+                    row_data[f'{body_part} X'] = int(kx)
+                    row_data[f'{body_part} Y'] = int(ky)
+
+                writer.writerow(row_data)
+
+                draw_connections(frame, keypoints_with_scores, EDGES, confidence_threshold=0.3)
+                draw_keypoints(frame, keypoints_with_scores, confidence_threshold=0.3, frame_number=current_frame)
+
+            ###    cv2.imshow('MoveNet Lightning', frame)
+
+            ###    key = cv2.waitKey(10) & 0xFF
+
+            ###    if key == ord('q'):
+            ###        break
+            ###    elif key == ord(' '):
+            ###       paused = not paused
+
+             ###   while paused:
+             ###       key = cv2.waitKey(10) & 0xFF
+              ###      if key == ord(' '):
+                ###        paused = not paused
+
+        # Release video capture for each video file
+        cap.release()
+
+# Close OpenCV window after processing all video files
+cv2.destroyAllWindows()
+cv2.waitKey(1)
