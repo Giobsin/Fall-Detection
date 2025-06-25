@@ -1,0 +1,349 @@
+
+import os
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "armraise" prefix
+        new_filename = f"armraise{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_armraise_v1.0/data")
+
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "bicyclecrunch" prefix
+        new_filename = f"bicyclecrunch{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_bicyclecrunch_v1.0/data")
+
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "birddog" prefix
+        new_filename = f"birddog{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_birddog_v1.0/data")
+
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "curl" prefix
+        new_filename = f"curl{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_curl_v1.0/data")
+
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "curl" prefix
+        new_filename = f"fly{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_fly_v1.0/data")
+
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "curl" prefix
+        new_filename = f"legraise{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_legraise_v1.0/data")
+
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "curl" prefix
+        new_filename = f"overheadpress{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_overheadpress_v1.0/data")
+
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "curl" prefix
+        new_filename = f"pushup{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_pushup_v1.0/data")
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "curl" prefix
+        new_filename = f"squat{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_squat_v1.0/data")
+
+def find_all_mp4_files(directory):
+    mp4_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(".mp4"):
+                file_path = os.path.join(root, filename)
+                mp4_files.append(file_path)
+    
+    return mp4_files
+
+def rename_mp4_files(directory):
+    mp4_files = find_all_mp4_files(directory)
+
+    for original_path in mp4_files:
+        # Extract the last two digits from the filename
+        last_two_digits = os.path.splitext(os.path.basename(original_path))[0][-2:]
+        
+        # Construct the new filename with "curl" prefix
+        new_filename = f"superman{last_two_digits}.mp4"
+        
+        # Full path of the new filename
+        new_path = os.path.join(os.path.dirname(original_path), new_filename)
+        
+        # Print for debugging
+        print(f"Renaming: {os.path.basename(original_path)} -> {new_filename}")
+        
+        # Rename the file
+        os.rename(original_path, new_path)
+        print(f"Renamed: {os.path.basename(original_path)} -> {new_filename}")
+
+# Replace "your_directory_path" with the actual path to your "raw_data" directory
+rename_mp4_files("infinityai_fitness_basic_superman_v1.0/data")
