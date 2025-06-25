@@ -1,0 +1,73 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import os
+
+# Assuming your data folders are stored in a directory named 'data_dirs'
+data_dirs = [
+    'infinityai_fitness_basic_armraise_v1.0/data',  # Activity 1
+    'infinityai_fitness_basic_bicyclecrunch_v1.0/data',  # Activity 2
+    'infinityai_fitness_basic_birddog_v1.0/data', # Activity 3
+    'infinityai_fitness_basic_curl_v1.0/data', # Activity 4
+    'infinityai_fitness_basic_fly_v1.0/data', # Activity 5
+    'infinityai_fitness_basic_legraise_v1.0/data', # Activity 6
+    'infinityai_fitness_basic_overheadpress_v1.0/data', # Activity 7
+    'infinityai_fitness_basic_pushup_v1.0/data', # Activity 8
+    'infinityai_fitness_basic_squat_v1.0/data', # Activity 9
+    'infinityai_fitness_basic_superman_v1.0/data' # Activity 10
+]
+
+# Select relevant features (excluding Frame)
+pose_features = [
+    'Nose X', 'Nose Y',
+    'Left Eye X', 'Left Eye Y',
+    'Right Eye X', 'Right Eye Y',
+    'Left Ear X', 'Left Ear Y',
+    'Right Ear X', 'Right Ear Y',
+    'Left Shoulder X', 'Left Shoulder Y',
+    'Right Shoulder X', 'Right Shoulder Y',
+    'Left Elbow X', 'Left Elbow Y',
+    'Right Elbow X', 'Right Elbow Y',
+    'Left Wrist X', 'Left Wrist Y',
+    'Right Wrist X', 'Right Wrist Y',
+    'Left Hip X', 'Left Hip Y',
+    'Right Hip X', 'Right Hip Y',
+    'Left Knee X', 'Left Knee Y',
+    'Right Knee X', 'Right Knee Y',
+    'Left Ankle X', 'Left Ankle Y',
+    'Right Ankle X', 'Right Ankle Y'
+]
+
+# Loop through each activity directory
+for i, data_dir in enumerate(data_dirs):
+    # Get list of files in the directory
+    files = os.listdir(data_dir)
+    
+    # Find the CSV file
+    csv_file = None
+    for file in files:
+        if file.endswith('.csv'):
+            csv_file = file
+            break
+    
+    if csv_file is None:
+        print(f"No CSV file found in {data_dir}")
+        continue
+
+    # Load data from the CSV file
+    data = pd.read_csv(os.path.join(data_dir, csv_file))
+
+    # Select relevant features and Activity column
+    X_df = data[pose_features + ['Activity']]
+
+    # Calculate correlation matrix
+    correlation_matrix = X_df.corr()
+
+    # Create the heatmap
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", annot_kws={"fontsize": 5})
+    plt.title(f'Correlation Matrix (Activity {i+1})')
+    plt.show()
+
+    # Close the figure to avoid memory issues
+    plt.close()
