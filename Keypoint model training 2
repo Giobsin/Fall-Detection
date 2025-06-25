@@ -1,0 +1,71 @@
+import pandas as pd
+import numpy as np
+import os
+from tensorflow import keras
+from tensorflow.keras import layers
+
+# Function to load and preprocess data from a CSV file
+def load_data(file_path):
+    data = pd.read_csv(file_path)
+    X = data.drop('Activity', axis=1).values
+    y = data['Activity'].values  # No need to subtract 1
+    return X, y
+
+# Load data from all activity folders
+data_dirs = [
+    'infinityai_fitness_basic_armraise_v1.0/data',  # Activity 1
+    'infinityai_fitness_basic_bicyclecrunch_v1.0/data',  # Activity 2
+    'infinityai_fitness_basic_birddog_v1.0/data', # Activity 3
+    'infinityai_fitness_basic_curl_v1.0/data', # Activity 4
+    'infinityai_fitness_basic_fly_v1.0/data', # Activity 5
+    'infinityai_fitness_basic_legraise_v1.0/data', # Activity 6
+    'infinityai_fitness_basic_overheadpress_v1.0/data', # Activity 7
+    'infinityai_fitness_basic_pushup_v1.0/data', # Activity 8
+    'infinityai_fitness_basic_squat_v1.0/data', # Activity 9
+    'infinityai_fitness_basic_superman_v1.0/data' # Activity 10
+]
+X, y = [], []
+for data_dir in data_dirs:
+    for file_name in os.listdir(data_dir):
+        if file_name.endswith('.csv'):
+            file_path = os.path.join(data_dir, file_name)
+            X_file, y_file = load_data(file_path)
+            X.extend(X_file)
+            y.extend(y_file - 1)  # Subtract 1 from the labels
+X = np.array(X)
+y = np.array(y)
+
+# Split the data into train and test sets
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Normalize the features
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Build the model
+model = keras.Sequential([
+    layers.Dense(256, activation='relu', input_shape=[X_train.shape[1]]),
+    layers.Dense(128, activation='relu'),
+    layers.Dense(64, activation='softmax')  # 10 output units for 10 classes
+])
+
+# Compile the model
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=10, batch_size=16, validation_data=(X_test, y_test))
+
+# Evaluate the model
+loss, accuracy = model.evaluate(X_test, y_test)
+print(f'Test accuracy: {accuracy * 100:.2f}%')
+
+# Convert the model to TensorFlow Lite format
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+
+# Save the TensorFlow Lite model
+with open('keypoints_model.tflite', 'wb') as f:
+    f.write(tflite_model)
