@@ -1,0 +1,19 @@
+# Run imports
+import os
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import mediapy as media
+import numpy as np
+import PIL
+import pandas as pd
+import tensorflow as tf
+import tensorflow_datasets as tfds
+import tensorflow_hub as hub
+import tqdm
+import absl.logging
+
+tf.get_logger().setLevel('ERROR')
+absl.logging.set_verbosity(absl.logging.ERROR)
+mpl.rcParams.update({
+    'font.size': 10,
+})
