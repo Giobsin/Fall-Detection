@@ -1,0 +1,118 @@
+import pandas as pd
+import numpy as np
+import os
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+def load_data(file_path):
+    data = pd.read_csv(file_path)
+    data['New_Feature_1'] = data['Left Knee X'] + data['Left Ankle Y']
+    data['New_Feature_2'] = data['Right Elbow X'] + data['Left Shoulder Y']
+    data['New_Feature_3'] = data['Right Shoulder Y'] - data['Left Hip Y']
+    data['New_Feature_4'] = abs(data['Left Ankle X'] - data['Right Hip Y'])
+    data['New_Feature_5'] = (data['Right Wrist Y'] - data['Left Knee X']) ** 2
+    data['New_Feature_6'] = np.sqrt((data['Left Elbow X'] - data['Nose Y'])**2 + (data['Nose X'] - data['Right Wrist X'])**2)
+    data['New_Feature_7'] = np.arctan2(data['Right Ankle Y'] - data['Right Shoulder Y'], data['Left Elbow X'] - data['Left Shoulder X'])
+    data['New_Feature_8'] = data['Left Ear Y'] * data['Right Ankle X']
+    data['New_Feature_9'] = np.exp(data['Right Knee Y'] - data['Left Shoulder X'])
+    data['New_Feature_10'] = np.log(abs(data['Right Elbow Y'] - data['Left Hip X']) + 1)
+    data['New_Feature_11'] = data['Left Ankle X'] ** (1/3) + data['Right Ankle X'] ** (1/3)
+    data['New_Feature_12'] = np.sin(data['Right Hip X']) + np.cos(data['Left Elbow Y'])
+    data['New_Feature_13'] = (data['Right Wrist Y'] - data['Left Ankle X']) / (data['Left Ankle Y'] - data['Right Wrist X'] + 1e-8)
+    data['New_Feature_14'] = np.log(abs(data['Right Hip X'] - data['Left Shoulder Y']) + 1)
+   
+    # Additional creative features with different body parts
+    data['New_Feature_15'] = data['Left Shoulder Y'] ** 2 - data['Right Ankle X']
+    data['New_Feature_16'] = np.sqrt((data['Right Ear Y'] - data['Left Wrist Y'])**2 + (data['Right Ear X'] - data['Left Wrist X'])**2)
+    data['New_Feature_17'] = np.arctan2(data['Left Hip X'] - data['Right Elbow Y'], data['Right Shoulder Y'] - data['Left Knee X'])
+    data['New_Feature_18'] = data['Right Knee X'] * data['Left Ankle Y']
+    data['New_Feature_19'] = np.exp(data['Right Elbow X'] - data['Left Knee Y'])
+    data['New_Feature_20'] = np.log(abs(data['Left Wrist X'] - data['Right Ankle Y']) + 1)
+    
+    # Last 4 features with angle calculations
+    data['New_Feature_21'] = np.arctan2(data['Left Knee Y'] - data['Left Ankle Y'], data['Left Knee X'] - data['Left Ankle X'])
+    data['New_Feature_22'] = np.arctan2(data['Right Knee Y'] - data['Right Ankle Y'], data['Right Knee X'] - data['Right Ankle X'])
+    data['New_Feature_23'] = np.arctan2(data['Left Shoulder Y'] - data['Left Wrist Y'], data['Left Shoulder X'] - data['Left Wrist X'])
+    data['New_Feature_24'] = np.arctan2(data['Right Shoulder Y'] - data['Right Wrist Y'], data['Right Shoulder X'] - data['Right Wrist X'])
+
+    return data[['New_Feature_1', 'New_Feature_2', 'New_Feature_3', 'New_Feature_4',
+                'New_Feature_5', 'New_Feature_6', 'New_Feature_7', 'New_Feature_8',
+                'New_Feature_9', 'New_Feature_10', 'New_Feature_11', 'New_Feature_12',
+                'New_Feature_13', 'New_Feature_14', 'New_Feature_15', 'New_Feature_16',
+                'New_Feature_17', 'New_Feature_18', 'New_Feature_19', 'New_Feature_20',
+                'New_Feature_21', 'New_Feature_22', 'New_Feature_23', 'New_Feature_24',
+                'Activity']]
+
+
+# Load data from all activity folders
+data_dirs = [
+    'infinityai_fitness_basic_armraise_v1.0/data',  # Activity 1
+    'infinityai_fitness_basic_bicyclecrunch_v1.0/data',  # Activity 2
+    'infinityai_fitness_basic_birddog_v1.0/data', # Activity 3
+    'infinityai_fitness_basic_curl_v1.0/data', # Activity 4
+    'infinityai_fitness_basic_fly_v1.0/data', # Activity 5
+    'infinityai_fitness_basic_legraise_v1.0/data', # Activity 6
+    'infinityai_fitness_basic_overheadpress_v1.0/data', # Activity 7
+    'infinityai_fitness_basic_pushup_v1.0/data', # Activity 8
+    'infinityai_fitness_basic_squat_v1.0/data', # Activity 9
+    'infinityai_fitness_basic_superman_v1.0/data' # Activity 10
+]
+
+# Load and preprocess data from all CSV files
+all_data = []
+for data_dir in data_dirs:
+    for file_name in os.listdir(data_dir):
+        if file_name.endswith('.csv'):
+            file_path = os.path.join(data_dir, file_name)
+            activity_name = os.path.basename(os.path.dirname(data_dir))
+            sampling_ratio = 1.0
+            all_data.append(load_data(file_path).sample(frac=sampling_ratio, random_state=42) if sampling_ratio < 1.0 else load_data(file_path))
+
+# Concatenate all dataframes into a single dataframe
+data = pd.concat(all_data, ignore_index=True)
+
+# Adjust labels to be in the range [0, 9]
+data['Activity'] -= 1
+
+# Split the data into features (X) and labels (y)
+X = data[['New_Feature_1', 'New_Feature_2', 'New_Feature_3', 'New_Feature_4',
+         'New_Feature_5', 'New_Feature_6', 'New_Feature_7', 'New_Feature_8',
+         'New_Feature_9', 'New_Feature_10', 'New_Feature_11', 'New_Feature_12',
+         'New_Feature_13', 'New_Feature_14', 'New_Feature_15', 'New_Feature_16',
+         'New_Feature_17', 'New_Feature_18', 'New_Feature_19', 'New_Feature_20',
+         'New_Feature_21', 'New_Feature_22', 'New_Feature_23', 'New_Feature_24']].values
+y = data['Activity'].values
+
+# Scale the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Split the data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Build the TensorFlow model
+model = tf.keras.Sequential([
+    tf.keras.layers.Input(shape=(24,), name='New_Features'),  # Adjust input shape to (14,)
+    tf.keras.layers.Dense(256, activation='relu'),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(64, activation='softmax')  # 10 output units for 10 classes
+])
+
+# Compile the model
+model.compile(optimizer='RMSprop', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=50, batch_size=64, validation_data=(X_test, y_test))
+
+# Evaluate the model
+loss, accuracy = model.evaluate(X_test, y_test)
+print(f'Test accuracy: {accuracy * 100:.2f}%')
+
+# Convert the model to TensorFlow Lite format
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+
+# Save the TensorFlow Lite model
+with open('features_model.tflite', 'wb') as f:
+    f.write(tflite_model)
