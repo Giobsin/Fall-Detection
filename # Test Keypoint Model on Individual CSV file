@@ -1,0 +1,117 @@
+import os
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+# Function to load and preprocess data from a CSV file
+def load_data(file_path):
+    data = pd.read_csv(file_path)
+    X = data.drop('Activity', axis=1).values  # Assuming 'Activity' is the column name for labels
+    return X
+
+# Load the TensorFlow Lite model (assuming 'keypoints_model.tflite' is in the same directory)
+interpreter = tf.lite.Interpreter(model_path='keypoints_model.tflite')
+interpreter.allocate_tensors()
+
+# Create the normalization layer
+norm_layer = tf.keras.layers.Normalization()
+
+# Load activity labels (assuming you have a mapping between class labels and activities)
+# Modify this part if you have activity labels stored differently
+activity_labels = {
+    0: 'Arm Raise',
+    1: 'Bi.Crunch',
+    2: 'Birddog',
+    3: 'Curl',
+    4: 'Fly',
+    5: 'Leg Raise',
+    6: 'Ov.Press',
+    7: 'Pushup',
+    8: 'Squat',
+    9: 'Superman'
+}
+
+# Define folder path and CSV file
+folder_path = 'infinityai_fitness_basic_armraise_v1.0/data'
+csv_file = 'armraise00.csv'
+file_path = os.path.join(folder_path, csv_file)
+
+# Load data from the specified CSV
+data = pd.read_csv(file_path)
+
+# Assuming 'Activity' is the column name for labels
+labels = data['Activity']
+
+# Initialize counts for each activity
+activity_counts = {i: 0 for i in range(10)}
+
+# Iterate over each frame
+for i, frame in enumerate(data.values):
+    # Preprocess data for the current frame
+    X = np.expand_dims(frame[:-1], axis=0)  # Exclude the last column which is the label
+
+    # Adapt the normalization layer to the data
+    norm_layer.adapt(X)
+
+    # Preprocess data (assuming your data requires normalization)
+    X = np.asarray(X, dtype=np.float32)  # Ensure data is float32 for normalization
+
+    # Set the tensor
+    interpreter.set_tensor(interpreter.get_input_details()[0]['index'], X)
+
+    # Run inference
+    interpreter.invoke()
+
+    # Get the output details
+    output_details = interpreter.get_output_details()
+
+    # Get the output (assuming the output is the probabilities for each class)
+    predictions = interpreter.get_tensor(output_details[0]['index'])
+
+    # Get the predicted class and confidence
+    predicted_class = np.argmax(predictions)
+    confidence = predictions[0][predicted_class]
+
+    # Print the predicted activity and confidence for the current frame
+    print(f'Frame {i+1}: Activity prediction: {activity_labels[predicted_class]} with confidence: {confidence}')
+
+    # Increment the count for the predicted class
+    activity_counts[predicted_class] += 1
+
+# Calculate the percentage of frames predicted for each activity
+total_frames = sum(activity_counts.values())
+
+# Plot the bar chart
+activities = [activity_labels[i] for i in range(10)]
+counts = [activity_counts[i] for i in range(10)]
+
+# Define colors for each activity
+colors = ['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'gold']
+
+# Plot the bar chart with different colors for each activity
+plt.figure(figsize=(10, 6))
+bars = plt.bar(range(1, 11), counts, tick_label=activities, color=colors)
+plt.xlabel('Activities')
+plt.ylabel('Number of Frames')
+plt.title(f'Activity Distribution Prediction of {csv_file}')
+
+# Add legend for colors and activities
+plt.legend(bars, activities)
+
+# Annotate confidence percentage above each bar
+for bar, count in zip(bars, counts):
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width() / 2, height + 5, f'{count / total_frames * 100:.2f}%', ha='center', va='bottom')
+
+plt.show()
+
+# Calculate the percentage of frames predicted for each activity
+activity_percentages = {activity_labels[i]: (count / total_frames) * 100 for i, count in activity_counts.items()}
+
+# Find the activity with the highest percentage
+most_predicted_activity = max(activity_percentages, key=activity_percentages.get)
+confidence = activity_percentages[most_predicted_activity]
+
+# Print the predicted activity and confidence
+print(f'This KeypointsTensorFlow model believes "{csv_file}": is {most_predicted_activity} with {confidence:.2f}% confidence')
